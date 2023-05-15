@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { loginUser } from "../modules/services";
 
-const Login = () => {
+export const Login = () => {
   const [password, setPassword] = useState("");
   const [alertPassword, setAlertPassword] = useState(false);
   const [alertGateway, setAlertGateway] = useState(false);
@@ -14,7 +14,7 @@ const Login = () => {
 
   useEffect(() => {
     setUser(null);
-  }, []);
+  }, [setUser]);
 
   function handleSubmit(event) {
     setIsLoading(true);
@@ -121,5 +121,3 @@ const Login = () => {
     </>
   );
 };
-
-export default Login;

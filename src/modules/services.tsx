@@ -1,4 +1,8 @@
 import axios from "axios";
+import {MainData} from "../data/MainData";
+import {WifiConfig} from "../data/WifiConfig";
+import {DeviceData} from "../data/DeviceData";
+
 /**
  * Set API Endpoints
  */
@@ -20,7 +24,8 @@ export const getSignalData = async () => {
     url: gateWayURL,
     timeout: 4000,
   });
-  return response;
+  console.error(response.data);
+  return response.data as MainData;
 };
 /**
  *
@@ -38,9 +43,9 @@ export const getWifiData = async (options) => {
     },
   });
   if (response.status === 200) {
-    return response;
+    return response.data as WifiConfig;
   }
-  return await Promise.reject(response);
+  throw response;
 };
 /**
  *
@@ -48,7 +53,7 @@ export const getWifiData = async (options) => {
  * @param {string} data - New Wifi Config JSON String
  * @returns setWifiData response status
  */
-export const setWifiData = async (options, data) => {
+export const setWifiData = async (options, data: WifiConfig) => {
   console.log("setWifiData");
   console.log(options);
   console.log(data);
@@ -82,7 +87,8 @@ export const getDeviceData = async (options) => {
     },
   });
   if (response.status === 200) {
-    return response;
+    console.error(response.data);
+    return response.data as DeviceData;
   }
   return Promise.reject(response);
 };

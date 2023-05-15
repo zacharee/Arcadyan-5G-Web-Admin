@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, {useState, useContext, useMemo} from "react";
 import {
   Card,
   Container,
@@ -11,17 +11,23 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../context/AuthContext";
-import WifiSettings from "./wifiSettings";
+import {WifiSettings} from "./wifiSettings";
 import { setWifiData } from "../modules/services";
+import {WifiConfig} from "../data/WifiConfig";
 
-const WifiCard = ({
-  props,
-  data,
-  setWifiConfig,
+interface Props {
+  cardIndex: number;
+  wifiConfig: WifiConfig;
+  isLoading: boolean;
+  setIsLoading: (boolean) => void;
+}
+
+export const WifiCard = ({
+  cardIndex,
   wifiConfig,
   isLoading,
   setIsLoading,
-}) => {
+}: Props) => {
   //////////////////////////
   ///////// WIFI CONFIG STATE
   //////////////////////////
@@ -29,24 +35,17 @@ const WifiCard = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const [disableDelete, setDisableDelete] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const cardIndex = Number(props);
   const ssidArray = wifiConfig.ssids;
   const newSSIDConfig = ssidArray.filter((ssid, index) => index !== cardIndex);
+  const data = useMemo(() => wifiConfig?.ssids?.at(cardIndex), [cardIndex, wifiConfig?.ssids]);
+  
+  const disableDelete = useMemo(() => cardIndex === 0, [cardIndex]);
 
   const newWifiConfig = {
     ...wifiConfig,
     ssids: newSSIDConfig,
   };
-
-  useEffect(() => {
-    if (cardIndex === 0) {
-      setDisableDelete(true);
-    } else {
-      setDisableDelete(false);
-    }
-  }, [wifiConfig]);
 
   const handleEditing = () => {
     setIsEditing(!isEditing);
@@ -72,9 +71,11 @@ const WifiCard = ({
     setIsLoading(true);
     setWifiData(user.token, newWifiConfig)
       .then((responseData) => {
-        console.log(responseData.toJSON());
+        setIsLoading(false);
+        console.log(responseData);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.log(error.toJSON());
       });
   };
@@ -86,7 +87,7 @@ const WifiCard = ({
   return (
     <Card bg="dark" text="light" className="m-2 rounded shadow">
       <Card.Body>
-        <Card.Title>Network {Number(props) + 1}</Card.Title>
+        <Card.Title>Network {Number(cardIndex) + 1}</Card.Title>
         <Container>
           <Row>
             <Col>
@@ -163,8 +164,7 @@ const WifiCard = ({
       {isEditing && (
         <WifiSettings
           wifiData={data}
-          props={props}
-          setWifiConfig={setWifiConfig}
+          cardIndex={cardIndex}
           wifiConfig={wifiConfig}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
@@ -187,7 +187,7 @@ const WifiCard = ({
                   variant="outline-success"
                   className="me-2"
                   onClick={handleConfirm}
-                  disabled={isLoading ? true : false}
+                  disabled={isLoading}
                 >
                   Confirm
                 </Button>
@@ -202,5 +202,3 @@ const WifiCard = ({
     </Card>
   );
 };
-
-export default WifiCard;

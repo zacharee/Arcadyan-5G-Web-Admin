@@ -1,14 +1,15 @@
 import { Routes, Route } from "react-router-dom";
-import Nav from "./components/nav";
-import Login from "./pages/login";
-import Signal from "./pages/signal";
-import System from "./pages/system";
-import WiFi from "./pages/wifi";
+import {NavContainer} from "./components/nav";
+import {Login} from "./pages/login";
+import {Signal} from "./pages/signal";
+import {System} from "./pages/system";
+import {WiFi} from "./pages/wifi";
+import React from "react";
 
-function App() {
+export function App() {
   return (
     <>
-      <Nav />
+      <NavContainer />
       <Routes>
         <Route path="/" element={<Signal />} />
         <Route path="/system" element={<System />} />
@@ -18,5 +19,3 @@ function App() {
     </>
   );
 }
-
-export default App;

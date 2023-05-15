@@ -7,19 +7,27 @@ import {
   Dropdown,
   Form,
   Container,
-  Col,
   Spinner,
 } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 import { setWifiData } from "../modules/services";
+import {SSIDConfig, WifiConfig} from "../data/WifiConfig";
 
-const WifiSettings = ({
+interface Props {
+  wifiData: SSIDConfig | undefined | null;
+  wifiConfig: WifiConfig | undefined | null;
+  cardIndex: number;
+  isLoading: boolean;
+  setIsLoading: (boolean) => void;
+}
+
+export const WifiSettings = ({
   wifiData,
   wifiConfig,
-  props,
+  cardIndex,
   isLoading,
   setIsLoading,
-}) => {
+}: Props) => {
   //////////////////////////
   ///////// WIFI CONFIG STATE
   //////////////////////////
@@ -39,14 +47,14 @@ const WifiSettings = ({
     setWifi2Radio(wifiData["2.4ghzSsid"]);
     setWifi5Radio(wifiData["5.0ghzSsid"]);
     setWifiBroadcast(wifiData.isBroadcastEnabled);
-  }, []);
+  }, [wifiData]);
 
   //////////////////////////
   ///////// WIFI CONFIGS/OPTIONS
   //////////////////////////
 
-  const newSSIDConfig = wifiConfig.ssids.map((obj, index) => {
-    if (index === Number(props)) {
+  const newSSIDConfig: SSIDConfig[] = wifiConfig.ssids.map((obj, index) => {
+    if (index === Number(cardIndex)) {
       return {
         ...obj,
         "2.4ghzSsid": wifi2Radio,
@@ -62,7 +70,7 @@ const WifiSettings = ({
     return obj;
   });
 
-  const newWifiConfig = {
+  const newWifiConfig: WifiConfig = {
     ...wifiConfig,
     ssids: newSSIDConfig,
   };
@@ -123,7 +131,7 @@ const WifiSettings = ({
               placeholder="SSID"
               defaultValue={wifiSSID}
               onChange={handleSSID}
-              maxLength="28"
+              maxLength={28}
               isInvalid={wifiSSID.length < 1}
             />
           </Form.Group>
@@ -138,7 +146,7 @@ const WifiSettings = ({
               placeholder="Password"
               defaultValue={wifiKey}
               onChange={handleKey}
-              maxLength="63"
+              maxLength={63}
               isInvalid={wifiKey.length < 8}
             />
           </Form.Group>
@@ -234,5 +242,3 @@ const WifiSettings = ({
     </Card.Footer>
   );
 };
-
-export default WifiSettings;

@@ -1,24 +1,26 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {useState, useEffect, useContext, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Spinner } from "react-bootstrap";
+import {Container, Row, Spinner} from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
-import WifiCard from "../components/wifiCard";
+import {WifiCard} from "../components/wifiCard";
 import { getWifiData, loginUser } from "../modules/services";
+import {WifiRadioCard} from "../components/wifiRadioCard";
+import {WifiConfig} from "../data/WifiConfig";
 
-const WiFi = () => {
+export const WiFi = () => {
   const { user, setUser } = useContext(AuthContext);
-  const [wifiConfig, setWifiConfig] = useState("");
+  const [wifiConfig, setWifiConfig] = useState<WifiConfig>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   /**
    * Get Wifi Data. Login if token expires
    */
-  const getData = () => {
+  const getData = useCallback(() => {
     setIsLoading(true);
     getWifiData(user.token)
       .then((wifiData) => {
-        setWifiConfig(wifiData.data);
+        setWifiConfig(wifiData);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -35,7 +37,7 @@ const WiFi = () => {
             console.log(response);
           });
       });
-  };
+  }, [setUser, user.password, user.token]);
   /**
    * Call Get Data on load if if user token exists. Send to login page otherwise. Refresh on changes to User State
    */
@@ -49,24 +51,32 @@ const WiFi = () => {
     } else {
       navigate("/login", { replace: true });
     }
-  }, [user]);
+  }, [getData, navigate, user]);
   /**
    * Return JSX
    */
   return (
     <Container>
+      <Row>
+        <WifiRadioCard
+            wifiConfig={wifiConfig}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+      </Row>
+
       {wifiConfig ? (
         Object.keys(wifiConfig.ssids).map((key, index) => {
           return (
-            <WifiCard
-              key={index}
-              props={key}
-              data={wifiConfig.ssids[index]}
-              wifiConfig={wifiConfig}
-              setWifiConfig={setWifiConfig}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
+            <Row>
+              <WifiCard
+                  key={index}
+                  cardIndex={Number(key)}
+                  wifiConfig={wifiConfig}
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+              />
+            </Row>
           );
         })
       ) : (
@@ -75,5 +85,3 @@ const WiFi = () => {
     </Container>
   );
 };
-
-export default WiFi;

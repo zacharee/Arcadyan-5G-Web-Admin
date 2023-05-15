@@ -13,7 +13,7 @@ _Note:_ VPN's must be disabled in order to connect to the gateway via the webapp
 
 # Upcoming Functionality:
 
-- Add New WiFi Network
+- Add New Wifi Network
 - Ban/Delete Client from Network
 - Display metric rating in Signal Popover
 - Historic Cell Metric Data
@@ -47,7 +47,7 @@ _Note:_ VPN's must be disabled in order to connect to the gateway via the webapp
 
 ![Login](https://i.imgur.com/GT9LDjg.png)
 ![Signal](https://i.imgur.com/v1LEESq.png)
-![WiFi](https://i.imgur.com/WvnkZ8x.png)
+![Wifi](https://i.imgur.com/WvnkZ8x.png)
 ![Wifi Editing](https://i.imgur.com/3Xmo6qM.png)
 ![System](https://i.imgur.com/38k7f1E.png)
 ![System Clients](https://i.imgur.com/BxpQ2Lu.jpg)

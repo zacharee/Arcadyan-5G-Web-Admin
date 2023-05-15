@@ -1,8 +1,14 @@
 import React from "react";
 import { Card, Container, Row, Col, Badge } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import {BaseClientData} from "../data/DeviceData";
 
-const DeviceCard = ({ intfc, data }) => {
+interface Props {
+  intfc: string;
+  data: BaseClientData;
+}
+
+export const DeviceCard = ({ intfc, data }: Props) => {
   return (
     <Card bg="dark" text="light" className="m-2 rounded shadow ">
       <Card.Body>
@@ -43,5 +49,3 @@ const DeviceCard = ({ intfc, data }) => {
     </Card>
   );
 };
-
-export default DeviceCard;

@@ -22,12 +22,13 @@ import {
   rsrqPop,
   sinrPop,
 } from "../modules/popovers";
+import {MainData} from "../data/MainData";
 
-const Signal = () => {
+export const Signal = () => {
   /**
    * Declare States/Context
    */
-  const [cellData, setCellData] = useState();
+  const [cellData, setCellData] = useState<MainData>(null);
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,7 +39,7 @@ const Signal = () => {
   const getData = () => {
     getSignalData()
       .then((signalData) => {
-        setCellData(signalData.data);
+        setCellData(signalData);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -298,8 +299,7 @@ const Signal = () => {
                       <OverlayTrigger
                         trigger="click"
                         placement="right"
-                        overlay={sinrPop}
-                      >
+                        overlay={sinrPop}>
                         <FontAwesomeIcon icon={faCircleInfo} />
                       </OverlayTrigger>
                     </Col>
@@ -316,5 +316,3 @@ const Signal = () => {
     </div>
   );
 };
-
-export default Signal;

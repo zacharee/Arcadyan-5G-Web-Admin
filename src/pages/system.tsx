@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, {useState, useContext, useEffect, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getDeviceData,
@@ -20,9 +20,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../context/AuthContext";
-import DeviceCardGroup from "../components/deviceCardGroup";
+import {DeviceCardGroup} from "../components/deviceCardGroup";
 
-const System = () => {
+export const System = () => {
   /**
    * Declare States/Context
    */
@@ -46,34 +46,20 @@ const System = () => {
    * Declare Page Navigation Function
    */
   const navigate = useNavigate();
-  /**
-   * Call Get Data on load if if user token exists. Send to login page otherwise. Refresh on changes to User State
-   */
-  useEffect(() => {
-    if (user) {
-      getData();
-      const interval = setInterval(() => {
-        getData();
-      }, 5000);
-      return () => clearInterval(interval);
-    } else {
-      navigate("/login", { replace: true });
-    }
-  }, [user]);
 
   /**
    * Get Device Client Data Function
    */
-  const getData = () => {
+  const getData = useCallback(() => {
     getDeviceData(user.token)
       .then((clientData) => {
         setClients({
-          wifi2: clientData.data.clients["2.4ghz"].length,
-          wifi5: clientData.data.clients["5.0ghz"].length,
-          ethernet: clientData.data.clients.ethernet.length,
+          wifi2: clientData.clients["2.4ghz"].length,
+          wifi5: clientData.clients["5.0ghz"].length,
+          ethernet: clientData.clients.ethernet.length,
         });
-        console.log(clientData.data);
-        setDeviceData({ data: clientData.data, loading: false });
+        console.log(clientData);
+        setDeviceData({ data: clientData, loading: false });
       })
       .catch((error) => {
         console.log(error.toJSON());
@@ -89,7 +75,22 @@ const System = () => {
             console.log(response);
           });
       });
-  };
+  }, [setUser, user.password, user.token]);
+
+  /**
+   * Call Get Data on load if if user token exists. Send to login page otherwise. Refresh on changes to User State
+   */
+  useEffect(() => {
+    if (user) {
+      getData();
+      const interval = setInterval(() => {
+        getData();
+      }, 5000);
+      return () => clearInterval(interval);
+    } else {
+      navigate("/login", { replace: true });
+    }
+  }, [getData, navigate, user]);
 
   /**
    * Restart Gateway Function
@@ -98,7 +99,7 @@ const System = () => {
     setIsLoading(true);
     rebootGateway(user.token)
       .then((response) => {
-        console.log(response.toJSON());
+        console.log(response);
       })
       .catch((error) => {
         console.log(error.toJSON());
@@ -120,7 +121,7 @@ const System = () => {
         usernameNew: "admin",
       })
         .then((response) => {
-          console.log(response.toJSON());
+          console.log(response);
           setIsLoading(false);
         })
         .catch((error) => {
@@ -170,7 +171,7 @@ const System = () => {
                         required
                         type={showPassword ? "text" : "password"}
                         placeholder="Current Password"
-                        maxLength="40"
+                        maxLength={40}
                         value={currentPassword}
                         onChange={handleCurrentPassword}
                         isInvalid={user?.password !== currentPassword}
@@ -189,7 +190,7 @@ const System = () => {
                         required
                         type={showNewPassword ? "text" : "password"}
                         placeholder="New Password"
-                        maxLength="40"
+                        maxLength={40}
                         value={newPassword}
                         onChange={handleNewPassword}
                         isInvalid={newPassword.length < 8}
@@ -302,7 +303,7 @@ const System = () => {
             return (
               <DeviceCardGroup
                 key={index}
-                props={key}
+                intfc={key}
                 data={deviceData.data?.clients[key]}
               />
             );
@@ -314,5 +315,3 @@ const System = () => {
     </div>
   );
 };
-
-export default System;
